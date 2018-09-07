@@ -4,27 +4,43 @@ using UnityEngine.UI;
 
 public class UpgradingMortgage : MonoBehaviour {
 
+	//the player object
     public MovePlayer player;
+	//the AI object
     public MoveAI player2;
+	//the button that allows the user to buy a house on a property
     public Button buyHouse;
+	//the option that allows the user to mortgage the property
     public Button mortgageProperty;
+	//the property on which the user fell on
     int propertyChosen =0;
+	//the text "Mortgage"
     public Text mortgage;
+	//the text "Cannot buy the property"
     public Text cannotBuy;
+	//the price of the property
     int priceOfProperty;
 
+	//the top indicator of a property indicating how many houses are on the property
     public Image[] houseIndicators;
 
+	//the scene that appears once the user presses a key to show all the properties he/she owns
     public Button[] buttons4PropertiesOwned;
 
+	//the text "Mortgaged" to show it is currently mortgaged
     public Text mortgaged;
+	//the text indicating the money the user owns/ AI owns
     public Text money;
 
     public InputField amount;
+	//the text that indicates if an exchange was accepted
     public Text offerAccepted;
+	//the text that indicates if an exchange was denied
     public Text offerDeclined;
+	//the button that allows the exchange
     public Button exchange;
 
+	//These text values are all the information shown on the property card of any property.
     public Text rent;
     public Text house1;
     public Text house2;
@@ -34,16 +50,21 @@ public class UpgradingMortgage : MonoBehaviour {
     public Text houseCost;
     public Text hotelCost;
     public Text exception;
+	//These images are the backgrounds of the card (section is the top of the card, indicating the section of the property,
+	//and white is simply a white background to a card.
     public RawImage white;
     public RawImage section; //need to change color of it.
     public Text titleOfProperty;
 
+	//These images are used for the special properties of monopoly, so that once the user falls on them, he has the
+	//right image representing the special property.
     public RawImage railroad;
     public RawImage waterWorks;
     public RawImage electricalCompany;
 
     bool moreInfo = false;
 
+	//to show that an action is not possible.
     public Text actionNotPossible;
     bool resetText = false;
 
@@ -95,37 +116,50 @@ public class UpgradingMortgage : MonoBehaviour {
         }
     }
 
+	//to add a house on the property landed on
     public void OnClickAddHouse()
     {
         Debug.Log("HOUSES");
         Debug.Log(propertyChosen);
         resetText = true;
+	    //gets the money left of the player
         string[] values = money.text.Split('$');
         int moneyLeft = int.Parse(values[1]);
         
+	    //if the property is not a property that does not allow to add houses, then continue inside the if condition
         if (propertyChosen!=12 && propertyChosen!=28 && propertyChosen!=5 && propertyChosen!=15 && propertyChosen!=25 && propertyChosen != 35)
         {
             string[] houseValue = houseCost.text.Split(new string[] { "$"," " }, System.StringSplitOptions.None);
+		
+		//grabbing the house and hotel prices
             int housePrice = int.Parse(houseValue[3]);
             int hotelPrice = int.Parse(houseValue[3])*5;
+		
+		//if conditions to know how many houses are there going to be after the user bought a house. It also
+		//removes the right amount of money once the user bought a property.
+		//the nextPositions array has all the properties within it
+		//if there are already four, then we put a hotel on the property
             if (player.nextPositions[propertyChosen-1].GetComponent<Properties>().fourHouses && moneyLeft>hotelPrice)
             {
                 player.nextPositions[propertyChosen-1].GetComponent<Properties>().hotel = true;
                 money.text = "$" + (moneyLeft - hotelPrice);
                 Debug.Log("4HOUSES");
             }
+		//if already three, the total of houses on the property is four.
             else if (player.nextPositions[propertyChosen-1].GetComponent<Properties>().threeHouses && moneyLeft>housePrice)
             {
                 player.nextPositions[propertyChosen-1].GetComponent<Properties>().fourHouses = true;
                 money.text = "$" + (moneyLeft - housePrice);
                 Debug.Log("3HOUSES");
             }
+		//if already two, the total of houses on the property is three.
             else if (player.nextPositions[propertyChosen-1].GetComponent<Properties>().twoHouses && moneyLeft>housePrice)
             {
                 player.nextPositions[propertyChosen-1].GetComponent<Properties>().threeHouses = true;
                 money.text = "$" + (moneyLeft - housePrice);
                 Debug.Log("2HOUSES");
             }
+		//if already one, the total of houses on the property is two.
             else if (player.nextPositions[propertyChosen-1].GetComponent<Properties>().oneHouse && moneyLeft>housePrice)
             {
                 player.nextPositions[propertyChosen-1].GetComponent<Properties>().twoHouses = true;
@@ -133,11 +167,13 @@ public class UpgradingMortgage : MonoBehaviour {
                 Debug.Log("HOUSE");
             }
 
+		//if the property already has an hotel, then no action is possible.
             else if (player.nextPositions[propertyChosen-1].GetComponent<Properties>().hotel)
             {
                 actionNotPossible.text = "Action not possible";
                 Debug.Log("HOTEL");
             }
+		//if no house on the property, then put one house on the property
             else if (!player.nextPositions[propertyChosen-1].GetComponent<Properties>().oneHouse && moneyLeft > housePrice)
             {
                 player.nextPositions[propertyChosen-1].GetComponent<Properties>().oneHouse = true;
@@ -149,6 +185,7 @@ public class UpgradingMortgage : MonoBehaviour {
                 actionNotPossible.text = "Action not possible";
             }
         }
+	    //if the user fell on a property that does not allow housing, indicate that the action is not possible.
         else
         {
             actionNotPossible.text = "Action not possible";
@@ -166,6 +203,8 @@ public class UpgradingMortgage : MonoBehaviour {
             bool result = int.TryParse(amount.GetComponentInChildren<Text>().text, out number);
             if (result)
             {
+		    //this calculates the cost that the AI is ready to negotiate for a property. If the value that the user
+		    //inputs is below that value that the AI expects, the offer is not accepted.
                 string[] valueMoney = player.money.text.Split('$');
                 string[] houseValue = houseCost.text.Split(new string[] { "$", " " }, System.StringSplitOptions.None);
                 int housePrice = int.Parse(houseValue[3]);
@@ -224,6 +263,7 @@ public class UpgradingMortgage : MonoBehaviour {
 
     public void OnClickMortgageProperty()
     {
+	    //operates the property with the MORTGAGE status.
         Debug.Log("MORTGAGE");
         resetText = true;
         //Add or withdraw money too
@@ -234,6 +274,8 @@ public class UpgradingMortgage : MonoBehaviour {
             //mortgaged.text = "Property mortgaged";
             string[] values = money.text.Split('$');
             int moneyLeft = 0;
+		
+		//these properties have a fixed mortgage rate
             if (propertyChosen != 11 && propertyChosen != 27 && propertyChosen != 4 && propertyChosen != 14 && propertyChosen != 24 && propertyChosen != 34)
             {
                 string[] mortgageValue = mortgage.text.Split('$');
@@ -249,6 +291,7 @@ public class UpgradingMortgage : MonoBehaviour {
             }
             money.text = "$" + moneyLeft;
         }
+	    //if the property is already mortgaged, then demortgage it.
         else if (player.nextPositions[propertyChosen-1].GetComponent<Properties>().isOwnedbyPlayer1 == false)
         {
             player.nextPositions[propertyChosen-1].GetComponent<Properties>().isOwnedbyPlayer1 = true;
@@ -295,6 +338,9 @@ public class UpgradingMortgage : MonoBehaviour {
         }
     }
 
+	
+	//this manages the information shown for every property on the game. All this information is shown
+	//on the card that it displayed when the player falls on a property.
     public void Properties_Mgmt(int position)
     {
         railroad.gameObject.SetActive(false);
@@ -806,6 +852,8 @@ public class UpgradingMortgage : MonoBehaviour {
         
     }
 
+	//the houseIndicator method defines how many images of houses or if the image of a hotel will be displayed
+	//above the card when the user falls on a property. This depends on how many houses were bought on the property.
     void houseIndicator()
     {
         for (int i = 0; i < 5; i++)
