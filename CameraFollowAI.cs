@@ -73,13 +73,16 @@ public class CameraFollowAI : MonoBehaviour {
                 }
             }
 
+            //animation for moving the camera
             StartCoroutine(MoveFct());
+            //now outdated player position for next iteration
             outdatedPlayerPos = player.transform.position;
         }
     }
 
     IEnumerator MoveFct()
     {
+        //animation to move the camera slowly instead of moving it directly to a new position
         float timeSinceStart = 0f;
         while (true)
         {
