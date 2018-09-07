@@ -4,29 +4,41 @@ using UnityEngine.UI;
 
 public class ChestAndChanceCards : MonoBehaviour { //SET CARDS FOR P2 ALSO
 
+	//The information on the card
     public Text infoCard;
+	//The type of card (Chest, Chance)
     public Text typeOfCard;
+	//White image on background of the card
     public RawImage backgroundCard;
+	//the player (user)
     public MovePlayer player;
+	//the AI
     public MoveAI player2;
+	//the pause panel that activates once user presses a key.
     public GameObject pausePanel;
 
+	//the camera that follows player one
     public GameObject cameraP1;
+	//the camera that follows player two
     public GameObject cameraP2;
 
     public GameObject getOutOfJailCard;
+	//the position of the jail
     public Transform inJail;
 
+	//when the player presses the key to pause (P), the isPaused bool becomes true
     bool isPaused = false;
 
     string[] chanceCards = new string[17];
     string[] communityChestCards = new string[17];
 
+	//activated when the player/AI has finished his/her/its turn
     bool hasPlayed = false;
 
 	// Use this for initialization
 	void Start () {
 
+		//setting all the community chest cards and chance cards' text
         chanceCards[0] = "Advance to Go -- Collect $200";
         chanceCards[1] = "Advance to Illinois Ave.";
         chanceCards[2] = "Advance to the nearest Utility. If\nunowned, you may buy it from the Bank. If\nowned, throw the dice and pay the owner a\ntotal of ten times the amount thrown.";
@@ -125,18 +137,24 @@ public class ChestAndChanceCards : MonoBehaviour { //SET CARDS FOR P2 ALSO
             backgroundCard.gameObject.SetActive(false);
         }*/
 
+	    //get key up used because key down would probably be equivalent to pressing P multiple times
         if (Input.GetKeyUp(KeyCode.P))
         {
+		//if the game was already paused
             if (isPaused)
             {
+		    //this makes the game run anew.
                 Time.timeScale = 1;
+		    //the panel is removed from the user's view
                 pausePanel.SetActive(false);
                 isPaused = false;
             }
                 
             else
             {
+		    //this stops all activity of the game in the background of the pause panel
                 Time.timeScale = 0;
+		    //this sets the pause panel on the foreground.
                 pausePanel.SetActive(true);
                 isPaused = true;
             }
@@ -153,6 +171,9 @@ public class ChestAndChanceCards : MonoBehaviour { //SET CARDS FOR P2 ALSO
         
         backgroundCard.gameObject.SetActive(false);
 
+	    //depending on the card, the user has to move to another location. This also means setting
+	    //the camera correctly. When any card is chosen, different rotations and translations are made because the
+	    //player jumps to a different location.
         if (chosenCard == 0)
         {
             //rotation
@@ -176,6 +197,7 @@ public class ChestAndChanceCards : MonoBehaviour { //SET CARDS FOR P2 ALSO
             player.hasMovedFromCard = true;
             player.transform.Translate(new Vector3(player.nextPositions[player.index].position.x - player.transform.position.x, player.transform.position.z - player.nextPositions[player.index].position.z, 0));
             string[] valueMoney = player.money.text.Split('$');
+		//action that the card does
             int moneyNow = int.Parse(valueMoney[1]) + 200;
             player.money.text = "$" + moneyNow; 
 
@@ -201,7 +223,8 @@ public class ChestAndChanceCards : MonoBehaviour { //SET CARDS FOR P2 ALSO
             player.index = 23;
             player.hasMovedFromCard = true;
             player.transform.Translate(new Vector3(player.nextPositions[player.index].position.x - player.transform.position.x, player.transform.position.z - player.nextPositions[player.index].position.z, 0));
-            player.Properties_Mgmt(player.index+1);
+            //action that the card does
+	    player.Properties_Mgmt(player.index+1);
         }
         else if (chosenCard == 2)
         {
